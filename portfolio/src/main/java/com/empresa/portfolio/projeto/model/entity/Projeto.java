@@ -1,14 +1,15 @@
 package com.empresa.portfolio.projeto.model.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.ManyToMany;
 import lombok.Setter;
 import lombok.Getter;
 import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.empresa.portfolio.membro.model.entity.Membro;
@@ -26,12 +27,15 @@ public class Projeto {
     private Long id;
     private String nome;
     private String descricao;
-    private Date dataInicio;
-    private Date dataFim;
-    private Date dataFimPrevisto;
+    private LocalDate dataInicio;
+    private LocalDate dataFim;
+    private LocalDate dataFimPrevisto;
     private BigDecimal orcamento;
 
+    @Enumerated
     private StatusProjeto status;
+
+    @Enumerated
     private ClassificacaoRisco classificacaoRisco;
 
     @ManyToMany
