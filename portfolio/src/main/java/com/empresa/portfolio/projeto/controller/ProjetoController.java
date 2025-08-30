@@ -1,6 +1,5 @@
 package com.empresa.portfolio.projeto.controller;
 
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +13,6 @@ import java.util.List;
 
 import com.empresa.portfolio.projeto.dto.ProjetoRequest;
 import com.empresa.portfolio.projeto.dto.ProjetoResponse;
-import com.empresa.portfolio.projeto.model.entity.Projeto;
 
 @RestController
 @RequestMapping("/projeto")
@@ -24,7 +22,7 @@ public class ProjetoController {
     private ProjetoService projetoService;
 
     @GetMapping("/projetos")
-    public ResponseEntity <List<Projeto>> listarProjetos() {
+    public ResponseEntity <List<ProjetoResponse>> listarProjetos() {
         return ResponseEntity.ok(projetoService.listarProjetos());//ajustar
     }
 

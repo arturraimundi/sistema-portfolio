@@ -14,6 +14,8 @@ import com.empresa.portfolio.projeto.repository.ProjetoRepository;
 import com.empresa.portfolio.projeto.dto.ProjetoRequest;
 import com.empresa.portfolio.projeto.dto.ProjetoResponse;
 import com.empresa.portfolio.projeto.model.entity.Projeto;
+import com.empresa.portfolio.membro.dto.MembroRequest;
+
 @Service
 public class ProjetoService {
     
@@ -25,16 +27,36 @@ public class ProjetoService {
 
     public ProjetoResponse salvarProjeto(ProjetoRequest request) {
         Projeto projeto = modelMapper.map(request, Projeto.class);
-       
+        int totalMembros = projeto.getMembros().size();
+
+        if(totalMembros < 3 || totalMembros > 10){
+            throw new IllegalArgumentException("O número de membros do projeto deve estar entre 3 e 10.");
+        }
         projeto.setClassificacaoRisco(classificacaoRisco(projeto));
 
         projeto = projetoRepository.save(projeto);
         return modelMapper.map(projeto, ProjetoResponse.class);
     }
 
-    public List<Projeto> listarProjetos() {
-        return projetoRepository.findAll();
+    public List<ProjetoResponse> listarProjetos() {
+    List<Projeto> projetos = projetoRepository.findAll();
+    List<ProjetoResponse> responses = new ArrayList<>();
+
+    for (Projeto projeto : projetos) {
+        ProjetoResponse response = modelMapper.map(projeto, ProjetoResponse.class);
+
+        List<String> nomesMembros = projeto.getMembros()
+                                           .stream()
+                                           .map(m -> m.getNome())
+                                           .toList();
+
+        response.setMembros(nomesMembros);
+        responses.add(response);
     }
+
+    return responses;
+}
+
 
     public ProjetoService(ProjetoRepository projetoRepository) {
         this.projetoRepository = projetoRepository;
