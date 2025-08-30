@@ -4,17 +4,33 @@ import java.math.BigDecimal;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.ArrayList;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.empresa.portfolio.projeto.model.enums.ClassificacaoRisco;
 import com.empresa.portfolio.projeto.model.enums.StatusProjeto;
 import com.empresa.portfolio.projeto.repository.ProjetoRepository;
+import com.empresa.portfolio.projeto.dto.ProjetoRequest;
+import com.empresa.portfolio.projeto.dto.ProjetoResponse;
 import com.empresa.portfolio.projeto.model.entity.Projeto;
 @Service
 public class ProjetoService {
     
+    @Autowired
     private final ProjetoRepository projetoRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public ProjetoResponse salvarProjeto(ProjetoRequest request) {
+        Projeto projeto = modelMapper.map(request, Projeto.class);
+       
+        projeto.setClassificacaoRisco(classificacaoRisco(projeto));
+
+        projeto = projetoRepository.save(projeto);
+        return modelMapper.map(projeto, ProjetoResponse.class);
+    }
 
     public List<Projeto> listarProjetos() {
         return projetoRepository.findAll();
