@@ -15,22 +15,43 @@ import com.empresa.portfolio.projeto.dto.ProjetoRequest;
 import com.empresa.portfolio.projeto.dto.ProjetoResponse;
 import com.empresa.portfolio.projeto.model.entity.Projeto;
 import com.empresa.portfolio.membro.dto.MembroRequest;
-
+import com.empresa.portfolio.membro.model.entity.Membro;
+import com.empresa.portfolio.membro.service.MembroService;
 @Service
 public class ProjetoService {
     
     @Autowired
     private final ProjetoRepository projetoRepository;
+    
+    @Autowired
+    private final MembroService membroService;
 
     @Autowired
     private ModelMapper modelMapper;
 
+    public ProjetoService(ProjetoRepository projetoRepository, MembroService membroService, ModelMapper modelMapper) {
+        this.projetoRepository = projetoRepository;
+        this.membroService = membroService;
+        this.modelMapper = modelMapper;
+    }
+
+
     public ProjetoResponse salvarProjeto(ProjetoRequest request) {
         Projeto projeto = modelMapper.map(request, Projeto.class);
         int totalMembros = projeto.getMembros().size();
+        
+        projeto.getMembros().clear();
 
-        if(totalMembros < 3 || totalMembros > 10){
-            throw new IllegalArgumentException("O número de membros do projeto deve estar entre 3 e 10.");
+        for(Long membroId : request.getMembrosIds()){
+           Membro membroExistente = membroService.getById(membroId);
+           if(membroExistente == null){
+            throw new IllegalArgumentException("Membro com ID " + membroId + " não existe.");
+           }
+           projeto.getMembros().add(membroExistente);   
+            
+        }
+        if(totalMembros < 1 || totalMembros > 10){
+            throw new IllegalArgumentException("O número de membros do projeto deve estar entre 1 e 10.");
         }
         projeto.setClassificacaoRisco(classificacaoRisco(projeto));
 
@@ -57,10 +78,6 @@ public class ProjetoService {
     return responses;
 }
 
-
-    public ProjetoService(ProjetoRepository projetoRepository) {
-        this.projetoRepository = projetoRepository;
-    }
 
 
         private static final List<StatusProjeto> ORDEM_STATUS = List.of(
@@ -109,5 +126,7 @@ public class ProjetoService {
         }
         return ClassificacaoRisco.ALTO;
     }
+
+    
     
 }
