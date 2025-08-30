@@ -2,6 +2,8 @@ package com.empresa.portfolio.projeto.model.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import lombok.Setter;
 import lombok.Getter;
@@ -39,6 +41,11 @@ public class Projeto {
     private ClassificacaoRisco classificacaoRisco;
 
     @ManyToMany
+    @JoinTable(
+    name = "projeto_membros",
+    joinColumns = @JoinColumn(name = "projeto_id"),
+    inverseJoinColumns = @JoinColumn(name = "membro_id")
+    )
     private List<Membro> membros = new ArrayList<>();
 
 

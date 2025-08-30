@@ -15,6 +15,11 @@ public class ProjetoService {
     
     private final ProjetoRepository projetoRepository;
 
+
+    public List<Projeto> listarProjetos() {
+        return projetoRepository.findAll();
+    }
+
     public ProjetoService(ProjetoRepository projetoRepository) {
         this.projetoRepository = projetoRepository;
     }

@@ -24,7 +24,7 @@ public class Membro {
     private String nome;
     private String funcao;
     
-    @ManyToMany
+    @ManyToMany(mappedBy = "membros")
     private List<Projeto> projetos = new ArrayList<>();
 
 }
