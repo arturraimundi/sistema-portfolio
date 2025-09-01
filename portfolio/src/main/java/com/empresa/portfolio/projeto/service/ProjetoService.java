@@ -127,6 +127,50 @@ public class ProjetoService {
         return ClassificacaoRisco.ALTO;
     }
 
-    
+  public ProjetoResponse atualizarProjeto(Long id, ProjetoRequest request) {
+    Projeto projeto = projetoRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Projeto com id " + id + " não encontrado"));
+
+    if (request.getNome() != null) projeto.setNome(request.getNome());
+    if (request.getDescricao() != null) projeto.setDescricao(request.getDescricao());
+    if (request.getDataInicio() != null) projeto.setDataInicio(request.getDataInicio());
+    if (request.getDataFim() != null) projeto.setDataFim(request.getDataFim());
+    if (request.getDataFimPrevisto() != null) projeto.setDataFimPrevisto(request.getDataFimPrevisto());
+    if (request.getOrcamento() != null) projeto.setOrcamento(request.getOrcamento());
+    if (request.getStatus() != null) projeto.setStatus(request.getStatus());
+
+    if (request.getMembrosIds() != null && !request.getMembrosIds().isEmpty()) {
+        projeto.getMembros().clear();
+        for(Long membroId : request.getMembrosIds()){
+            Membro membroExistente = membroService.getById(membroId);
+            if(membroExistente == null){
+                throw new IllegalArgumentException("Membro com ID " + membroId + " não existe.");
+            }
+            projeto.getMembros().add(membroExistente);
+        }
+    }
+
+    if (projeto.getDataInicio() != null && projeto.getDataFimPrevisto() != null && projeto.getOrcamento() != null) {
+        projeto.setClassificacaoRisco(classificacaoRisco(projeto));
+    }
+
+    Projeto atualizado = projetoRepository.save(projeto);
+
+    ProjetoResponse response = modelMapper.map(atualizado, ProjetoResponse.class);
+    response.setMembros(
+        atualizado.getMembros()
+                  .stream()
+                  .map(Membro::getNome)
+                  .toList()
+    );
+    return response;
+}
+public void deletarProjeto(Long id) {
+    Projeto projeto = projetoRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Projeto com id " + id + " não encontrado"));
+
+    projetoRepository.delete(projeto);
+}
+
     
 }
