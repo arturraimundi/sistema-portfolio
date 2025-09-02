@@ -14,7 +14,6 @@ import com.empresa.portfolio.projeto.repository.ProjetoRepository;
 import com.empresa.portfolio.projeto.dto.ProjetoRequest;
 import com.empresa.portfolio.projeto.dto.ProjetoResponse;
 import com.empresa.portfolio.projeto.model.entity.Projeto;
-import com.empresa.portfolio.membro.dto.MembroRequest;
 import com.empresa.portfolio.membro.model.entity.Membro;
 import com.empresa.portfolio.membro.service.MembroService;
 @Service
@@ -78,9 +77,7 @@ public class ProjetoService {
     return responses;
 }
 
-
-
-        private static final List<StatusProjeto> ORDEM_STATUS = List.of(
+    private static final List<StatusProjeto> ORDEM_STATUS = List.of(
         StatusProjeto.ANALISE,
         StatusProjeto.ANALISE_REALIZADA,
         StatusProjeto.ANALISE_APROVADA,
@@ -116,7 +113,7 @@ public class ProjetoService {
         long meses = ChronoUnit.MONTHS.between(projeto.getDataInicio(), projeto.getDataFimPrevisto());
         BigDecimal orcamento = projeto.getOrcamento();
 
-        if(orcamento.compareTo(new BigDecimal(100000))<= 0 && meses >= 3){
+        if(orcamento.compareTo(new BigDecimal(100000))<= 0 && meses <= 3){
             return ClassificacaoRisco.BAIXO;
         } else if (
             (orcamento.compareTo(new BigDecimal("100001")) >= 0 && orcamento.compareTo(new BigDecimal("500000")) <= 0)
@@ -165,12 +162,25 @@ public class ProjetoService {
     );
     return response;
 }
-public void deletarProjeto(Long id) {
+    public void deletarProjeto(Long id) {
     Projeto projeto = projetoRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Projeto com id " + id + " não encontrado"));
-
+    projeto.setClassificacaoRisco(classificacaoRisco(projeto));
+    if(projeto.getStatus() == StatusProjeto.EM_ANDAMENTO || projeto.getStatus() == StatusProjeto.ENCERRADO){
+        throw new IllegalArgumentException("Projetos com status EM_ANDAMENTO ou ENCERRADO não podem ser deletados.");
+    }
     projetoRepository.delete(projeto);
 }
+    public ProjetoResponse atualizarStatus(Long id, StatusProjeto novoStatus) {
+        Projeto projeto = projetoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Projeto não encontrado"));
+
+        validarTransicao(projeto, novoStatus);
+
+        projeto.setStatus(novoStatus);
+        Projeto atualizado = projetoRepository.save(projeto);
+        return modelMapper.map(atualizado, ProjetoResponse.class);
+    }
 
     
 }

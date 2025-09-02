@@ -16,7 +16,7 @@ import java.util.List;
 
 import com.empresa.portfolio.projeto.dto.ProjetoRequest;
 import com.empresa.portfolio.projeto.dto.ProjetoResponse;
-
+import com.empresa.portfolio.projeto.dto.StatusProjetoRequest;
 @RestController
 @RequestMapping("/projeto")
 public class ProjetoController {
@@ -26,7 +26,7 @@ public class ProjetoController {
 
     @GetMapping("/projetos")
     public ResponseEntity <List<ProjetoResponse>> listarProjetos() {
-        return ResponseEntity.ok(projetoService.listarProjetos());//ajustar
+        return ResponseEntity.ok(projetoService.listarProjetos());
     }
 
     @PostMapping("/salvar")
@@ -48,5 +48,12 @@ public class ProjetoController {
         projetoService.deletarProjeto(id);
         return ResponseEntity.noContent().build();
     }
+    @PutMapping("/status/{id}")
+    public ResponseEntity<ProjetoResponse> atualizarStatusProjeto(
+    @PathVariable Long id,
+    @RequestBody StatusProjetoRequest request) {
+    ProjetoResponse response = projetoService.atualizarStatus(id, request.getNovoStatus());
+    return ResponseEntity.ok(response);
+}
 
 }
