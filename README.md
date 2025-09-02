@@ -66,21 +66,26 @@ Sequência obrigatória:
 - Spring Security
 - ModelMapper
 
+Windows
 ## 📦 Instalação
 
 1. Clone o repositório:
 ```bash
 git clone https://github.com/seu-usuario/sistema-portfolio.git
 ```
+2. Entre no projeto portfolio:
+```
+cd portfolio
+```
 
-2. Configure o banco de dados PostgreSQL em `application.properties`:
+3. Configure o banco de dados PostgreSQL em `application.properties`:
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/portfolio
 spring.datasource.username=seu_usuario
 spring.datasource.password=sua_senha
 ```
 
-3. Execute a aplicação:
+4. Execute a aplicação:
 ```bash
 ./mvnw spring-boot:run
 ```
